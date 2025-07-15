@@ -8,7 +8,7 @@ class BaseAgent:
         self.model = model
 
         if not instruction_prompt.exists():
-            raise FileNotFoundError(f"Prompt file not found: {instruction_prompt}")
+            return f"Prompt file not found: {instruction_prompt}"
 
         with open(instruction_prompt, "r", encoding="utf-8") as f:
             self.instruction = f.read().strip()
@@ -18,14 +18,15 @@ class BaseAgent:
     def ask(self, **kwargs):
         missing = self.expected_vars - kwargs.keys()
         if missing:
-            raise ValueError(f"Missing variable(s): {missing}")
+            return f"Missing variable(s): {missing}"
         extra = kwargs.keys() - self.expected_vars
         if extra:
-            raise ValueError(f"Unexpected variable(s): {extra}")
+            return f"Unexpected variable(s): {extra}"
 
         system_prompt = self.instruction
         for key in self.expected_vars:
-            system_prompt = system_prompt.replace(f"{{{key}}}", str(kwargs[key]))
+            system_prompt = system_prompt.replace(
+                f"{{{key}}}", str(kwargs[key]))
 
         user_prompt = "\n".join(
             f"{key.capitalize()}: {value}" for key, value in kwargs.items()
