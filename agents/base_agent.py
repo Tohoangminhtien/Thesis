@@ -1,35 +1,20 @@
-import re
-from model.llm_model import AzuzeModel
+from model.llm_model import AzureModel
 from pathlib import Path
 
 
 class BaseAgent:
-    def __init__(self, model: AzuzeModel, instruction_prompt: Path):
+
+    def __init__(self, model: AzureModel, system_prompt: Path, max_tokens: int = 100):
         self.model = model
+        self.max_tokens = max_tokens
 
-        if not instruction_prompt.exists():
-            return f"Prompt file not found: {instruction_prompt}"
+        if not system_prompt.exists():
+            raise FileNotFoundError(f"Prompt file not found: {system_prompt}")
 
-        with open(instruction_prompt, "r", encoding="utf-8") as f:
-            self.instruction = f.read().strip()
+        with open(system_prompt, "r", encoding="utf-8") as f:
+            self.system_prompt = f.read().strip()
 
-        self.expected_vars = set(re.findall(r"{(\w+)}", self.instruction))
-
-    def ask(self, max_token: int = 100, **kwargs):
-        missing = self.expected_vars - kwargs.keys()
-        if missing:
-            return f"Missing variable(s): {missing}"
-        extra = kwargs.keys() - self.expected_vars
-        if extra:
-            return f"Unexpected variable(s): {extra}"
-
-        system_prompt = self.instruction
-        for key in self.expected_vars:
-            system_prompt = system_prompt.replace(
-                f"{{{key}}}", str(kwargs[key]))
-
-        user_prompt = "\n".join(
-            f"{key.capitalize()}: {value}" for key, value in kwargs.items()
+    def ask(self, user_prompt: str):
+        return self.model.chat(
+            self.system_prompt, user_prompt, max_tokens=self.max_tokens
         )
-
-        return self.model.chat(system_prompt, user_prompt, max_tokens=max_token)
