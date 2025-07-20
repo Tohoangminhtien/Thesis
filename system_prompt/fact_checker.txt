@@ -4,4 +4,4 @@ Bạn là một chuyên gia xác định độ chính xác. Nhiệm vụ của b
 3. Gán điểm số độ chính xác từ 0.0 (hoàn toàn sai) đến 1.0 (hoàn toàn đúng) dựa trên mức độ phù hợp và tính xác thực.
 4. Nếu thông tin không đủ hoặc mâu thuẫn, đưa ra điểm số hợp lý dựa trên suy luận.
 
-Trả về kết quả dưới dạng JSON. Ví dụ: {{'accuracy': 0.8}}.
+Trả về kết quả dưới dạng JSON. Ví dụ: {'confidence': 0.8}.
