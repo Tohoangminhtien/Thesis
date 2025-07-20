@@ -10,7 +10,7 @@ class AzuzeModel:
             api_version=api_version,
         )
 
-    def chat(self, system_prompt: str, user_prompt: str):
+    def chat(self, system_prompt: str, user_prompt: str, max_tokens: int = 100):
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -19,7 +19,7 @@ class AzuzeModel:
         completion = self.client.chat.completions.create(
             model=self.deployment,
             messages=messages,
-            max_tokens=100,
+            max_tokens=max_tokens,
             temperature=0.7,
             top_p=0.95,
             frequency_penalty=0,

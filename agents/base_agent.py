@@ -15,7 +15,7 @@ class BaseAgent:
 
         self.expected_vars = set(re.findall(r"{(\w+)}", self.instruction))
 
-    def ask(self, **kwargs):
+    def ask(self, max_token: int = 100, **kwargs):
         missing = self.expected_vars - kwargs.keys()
         if missing:
             return f"Missing variable(s): {missing}"
@@ -32,4 +32,4 @@ class BaseAgent:
             f"{key.capitalize()}: {value}" for key, value in kwargs.items()
         )
 
-        return self.model.chat(system_prompt, user_prompt)
+        return self.model.chat(system_prompt, user_prompt, max_tokens=max_token)
