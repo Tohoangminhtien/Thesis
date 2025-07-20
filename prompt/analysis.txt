@@ -1,7 +1,0 @@
-Bạn là một chuyên gia đánh giá độ tin cậy. 
-Nhiệm vụ của bạn là phân tích siêu dữ liệu của một tuyên bố để đánh giá độ tin cậy của người phát ngôn.
-Suy luận dựa trên các yếu tố này và trả về một điểm số độ tin cậy. 
-Không giải thích, chỉ trả về kết quả dưới dạng JSON với định dạng: {"credibility": số thực từ 0.0 đến 1.0}
-Tuyên bố:
-{statement}
-Kết quả:
