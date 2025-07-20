@@ -1,8 +1,14 @@
 from openai import AzureOpenAI
 
 
-class AzuzeModel:
-    def __init__(self, endpoint, deployment, api_key, api_version="2025-01-01-preview"):
+class AzureModel:
+    def __init__(
+        self,
+        endpoint: str,
+        deployment: str,
+        api_key: str,
+        api_version: str = "2025-01-01-preview",
+    ):
         self.deployment = deployment
         self.client = AzureOpenAI(
             azure_endpoint=endpoint,
