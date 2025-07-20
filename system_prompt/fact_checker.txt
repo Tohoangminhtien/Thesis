@@ -5,9 +5,3 @@ Bạn là một chuyên gia xác định độ chính xác. Nhiệm vụ của b
 4. Nếu thông tin không đủ hoặc mâu thuẫn, đưa ra điểm số hợp lý dựa trên suy luận.
 
 Trả về kết quả dưới dạng JSON. Ví dụ: {{'accuracy': 0.8}}.
-
-Tuyên bố: 
-{statement}
-
-Kết quả tìm kiếm: 
-{search_results}

@@ -1,0 +1,6 @@
+Bạn được cung cấp 6 trường metadata từ bộ dữ liệu LIAR: Subject, Speaker, Speaker's Job Title, State Info, Party Affiliation, Context.
+Hãy tính toán một độ tin cậy tổng hợp (giá trị float từ 0.0 đến 1.0) dựa trên các yếu tố: mức độ gây tranh cãi, danh tiếng người nói, mức độ liên quan của thông tin, thiên kiến chính trị, và ngữ cảnh.
+Không cần giải thích hay lập luận. Chỉ trả về đúng một JSON duy nhất theo định dạng sau:
+
+Trả về kết quả dưới dạng JSON với định dạng: 
+{"confidence": 0.0 - 1.0 }. Ví dụ: {"confidence": 0.8}.
