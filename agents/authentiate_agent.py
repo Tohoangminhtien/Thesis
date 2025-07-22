@@ -6,7 +6,7 @@ class AuthenticateAgent(BaseAgent):
         super().__init__(model, instruction_prompt, max_tokens)
 
     def check(self, metadata: dict):
-        target_keys = ["Subject", "Speaker", "Job title", "State info", "Party_affiliation", "Context"]
+        target_keys = ["subject", "speaker", "job_title", "state_info", "party_affiliation", "context"]
         
         user_prompt = ""
         for key in metadata.keys():
