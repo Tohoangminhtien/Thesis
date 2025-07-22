@@ -1,0 +1,16 @@
+You are a fact-checking model. Classify the following political statement as either True or False based on factual correctness.
+Answer with only one word: True or False.
+
+Examples:
+
+Statement:
+"Wisconsin is on pace to double the number of layoffs this year."
+Answer: False
+
+Statement:
+"Donald Trump is against marriage equality. He wants to go back."
+Answer: True
+
+Statement:
+"Tom Ganley has two Fs from the Better Business Bureau and over 160 complaints in just three years."
+Answer: False
