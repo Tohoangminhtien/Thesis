@@ -7,7 +7,7 @@ class FactCheckerAgent(BaseAgent):
 
     def check(self, statement: str, search_results: str):
         user_prompt = (
-            f"Statement: {statement}\nSearch Results: {search_results}\nOutput:"
+            f"\nStatement: {statement}\nSearch Results: {search_results}\nOutput:"
         )
         response = self.ask(user_prompt=user_prompt)
         return response
