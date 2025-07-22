@@ -34,34 +34,6 @@ authentication_agent = AuthenticateAgent(
     model, instruction_prompt=Path("./system_prompt/authenticate.txt"), max_tokens=10
 )
 
-import json
-import re
-
-
-def extract_json_from_output(output: str) -> dict:
-    """
-    Extracts and parses JSON object from LLM output string.
-
-    Args:
-        output (str): The raw output from the LLM, e.g. "Fact Response: {'confidence': 1.0}"
-
-    Returns:
-        dict: Parsed JSON object as Python dict.
-    """
-    # Tìm đoạn JSON-like string
-    match = re.search(r"\{.*\}", output)
-    if match:
-        json_str = match.group(0)
-        try:
-            return json.loads(
-                json_str.replace("'", '"')
-            )  # Đổi ' -> " cho hợp chuẩn JSON
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON format: {json_str}") from e
-    else:
-        raise ValueError("No JSON object found in the output.")
-
-
 # Load the dataset
 df = pd.read_csv("data/test.csv")
 new_df = pd.DataFrame(
@@ -102,7 +74,7 @@ for i in range(NUM_TEST):
 
     # Classify Agent
     classify_response = classify_agent.classify(statement=statement)
-    classify_response = extract_json_from_output(classify_response)
+    classify_response = json.loads(classify_response)
 
     # Search Agent
     search_response = search_agent.search(query=statement)
@@ -111,11 +83,11 @@ for i in range(NUM_TEST):
     fact_response = fact_checker.check(
         statement=statement, search_results=search_response
     )
-    fact_response = extract_json_from_output(fact_response)
+    fact_response = json.loads(fact_response)
 
     # Authenticate Agent
     auth_response = authentication_agent.check(metadata=metadata)
-    auth_response = extract_json_from_output(auth_response)
+    auth_response = json.loads(auth_response)
 
     new_row = pd.DataFrame(
         [
