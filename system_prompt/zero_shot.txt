@@ -1,0 +1,2 @@
+You are a fact-checking model. Classify the following political statement as either True or False based on factual correctness.
+Answer with only one word: True or False.
