@@ -37,7 +37,7 @@ authentication_agent = AuthenticateAgent(
 # Load the dataset
 df = pd.read_csv("./results/classify_agent_results.csv")
 idx_from = 101
-new_df = pd.DataFrame(columns=["statement", "fact_confidence", "label"])
+new_df = pd.DataFrame(columns=["statement", "fact_confidence"])
 
 
 for i in range(idx_from, len(df)):
@@ -73,7 +73,6 @@ for i in range(idx_from, len(df)):
             {
                 "statement": statement,
                 "fact_confidence": fact_response["confidence"],
-                "label": label,
             }
         ]
     )
