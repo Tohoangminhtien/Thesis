@@ -1,6 +1,7 @@
 from agno.tools.googlesearch import GoogleSearchTools
 import json
 import warnings
+
 warnings.filterwarnings("ignore")
 
 
@@ -14,6 +15,6 @@ class SearchAgent:
         response = json.loads(response)
         result = ""
         for i in response:
-            if i['title']:
+            if i["title"]:
                 result += f"Title: {i['title']} \nDescription: {i['description']}\n"
         return result
