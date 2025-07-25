@@ -36,11 +36,12 @@ authentication_agent = AuthenticateAgent(
 
 # Load the dataset
 df = pd.read_csv("./results/classify_agent_results.csv")
-idx_from = 101
+idx_from = "The U.S. ranks 37th in the world for health care."
+start_idx = df.index[df["statement"] == idx_from][0]
 new_df = pd.DataFrame(columns=["statement", "fact_confidence"])
 
 
-for i in range(idx_from, len(df)):
+for i in range(start_idx - 1, len(df)):
     statement = df["statement"][i]
     label = df["label"][i]
 
@@ -59,10 +60,14 @@ for i in range(idx_from, len(df)):
     search_response = search_agent.search(query=statement)
 
     # Fact Checker Agent
-    fact_response = fact_checker.check(
-        statement=statement, search_results=search_response
-    )
-    fact_response = json.loads(fact_response)
+    try:
+        fact_response = fact_checker.check(
+            statement=statement, search_results=search_response
+        )
+        fact_response = json.loads(fact_response)
+    except Exception as e:
+        print(f"Error in fact checking: {e}")
+        continue
 
     # Authenticate Agent
     # auth_response = authentication_agent.check(metadata=metadata)
