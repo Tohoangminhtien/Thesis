@@ -15,5 +15,5 @@ def evaluate_method(csv_file: str):
     print("-" * 50)
 
 
-evaluate_method("./data/zero_shot_results.csv")
-evaluate_method("./data/few_shot_results.csv")
+evaluate_method("./results/zero_shot_results.csv")
+evaluate_method("./results/few_shot_results.csv")

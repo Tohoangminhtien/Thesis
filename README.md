@@ -42,9 +42,76 @@ Luồng làm việc:
 3. Tìm kiếm web (SearchAgent): Tác nhân này sử dụng công cụ GoogleSearch để thực hiện tìm kiếm web với tuyên bố làm truy vấn, trả về tối đa ba kết quả dưới dạng danh sách JSON, mỗi kết quả chứa tiêu đề và nội dung tóm tắt. Công cụ này đóng vai trò quan trọng trong việc cung cấp bằng chứng bên ngoài để xác minh tuyên bố.
 4. Xác định độ chính xác (FactCheckerAgent): Tác nhân này so sánh tuyên bố với kết quả tìm kiếm web từ SearchAgent, đánh giá xem tuyên bố được hỗ trợ, mâu thuẫn, hay không rõ ràng. Kết quả là một điểm số độ chính xác **{"confidence": 0.0-1.0}**
 5. Tổng hợp (AggrAgent): Tác nhân này nhận đầu ra từ ClassifyAgent, 
-AnalysisAgent, và FactCheckerAgent, áp dụng logic tổng hợp để đưa ra nhãn cuối cùng **{"final_label": "..."}**
+AnalysisAgent, và FactCheckerAgent, áp dụng logic tổng hợp để đưa ra nhãn cuối cùng **{"final_label": "True/False"}**
 
 ## Cài đặt
 
 1. Install libraries
-2. Run workflow.py
+```console
+pip install -r requirements.txt
+```
+2. Run zero-shot prompting 
+```console
+python zero_shot.py
+```
+3. Run few-shot prompting
+```console
+python few_shot.py
+```
+4. Run multi-agent
+```console
+python workflow.py
+```
+
+5. Evaluate
+
+Đối với zero-shot và few-shot:
+```console
+python evaluate.py
+```
+Đối với multi-agent
+```console
+python models.py
+```
+
+## Experimental
+
+1. Chart comparison
+![chart](./assets/model_accuracy_comparison.png)
+
+2. Results
+
+| Model                             | Mean Accuracy (%) | Sources |
+| --------------------------------- | ----------------- | ------- |
+| Ensemble với TF-IDF               | 63,9              | [1]     |
+| RoBERTa base                      | 62,0              | [1]     |
+| BERT base                         | 63,0              | [1]     |
+| Hồi quy logistic (tối ưu hóa)     | 63,5              | [2]     |
+| BERT (cơ bản)                     | 63,5              | [2]     |
+| BERT (tối ưu hóa)                 | 63,5              | [2]     |
+| Naive Bayes (Bigram)              | 60,0              | [2]     |
+| CNN                               | 58,0              | [3]     |
+| Bi-LSTM                           | 58,0              | [3]     |
+| Conv-HAN                          | 59,0              | [3]     |
+| BERT                              | 62,0              | [3]     |
+| RoBERTa                           | 62,0              | [3]     |
+| DistilBERT                        | 60,0              | [3]     |
+| ELECTRA                           | 61,0              | [3]     |
+| ELMo                              | 61,0              | [3]     |
+| ELMo                              | 61,0              | [3]     |
+| ELMo                              | 61,0              | [3]     |
+| Zero-shot                         | 66.9              | Ours    |
+| Few-shot (3-shot)                 | 68.4              | Ours    |
+| Multi-Agent + Naive Bayes         | 65.3              | Ours    |
+| Multi-Agent + Logistic Regression | 71.1              | Ours    |
+| Multi-Agent + Decision Tree       | 68.4              | Ours    |
+| Multi-Agent + Random Forest       | 68.8              | Ours    |
+| Multi-Agent + SVM (RBF)           | 71.4              | Ours    |
+| Multi-Agent + KNN                 | 69.1              | Ours    |
+| Multi-Agent + MLP                 | 71.9              | Ours    |
+
+### References
+
+1. A Comparative Study of Machine Learning and Deep Learning Techniques for Fake News Detection (MDPI, 2022)
+2. A Comprehensive Benchmark for Fake News Detection (PMC, 2022)
+3. A benchmark study of machine learning models for online fake news detection (ScienceDirect, 2021)
