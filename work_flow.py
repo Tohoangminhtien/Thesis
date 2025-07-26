@@ -7,6 +7,7 @@ from agents.authentiate_agent import AuthenticateAgent
 from model.llm_model import AzureModel
 from pathlib import Path
 from dotenv import load_dotenv
+from openai import BadRequestError
 import os
 import json
 
@@ -35,26 +36,34 @@ authentication_agent = AuthenticateAgent(
 )
 
 # Load the dataset
-df = pd.read_csv("./results/classify_agent_results.csv")
-idx_from = "The U.S. ranks 37th in the world for health care."
-start_idx = df.index[df["statement"] == idx_from][0]
-new_df = pd.DataFrame(columns=["statement", "fact_confidence"])
+df = pd.read_csv("./data/test_binary.csv")
+
+new_df = pd.DataFrame(
+    columns=["classify_confidence", "fact_confidence", "authen_confidence", "label"]
+)
 
 
-for i in range(start_idx - 1, len(df)):
+for i in range(len(df)):
     statement = df["statement"][i]
     label = df["label"][i]
-
-    print(f"Statement {statement}")
+    metadata = {
+        "subject": df["subject"][i],
+        "speaker": df["speaker"][i],
+        "job_title": df["job_title"][i],
+        "state_info": df["state_info"][i],
+        "party_affiliation": df["party_affiliation"][i],
+        "context": df["context"][i],
+    }
 
     # Legality Agent
-    # legal_response = legal_agent.check(statement=statement)
-    # if not legal_response:
-    #     continue
+    legal_response = legal_agent.check(statement=statement)
+    if not legal_response:
+        print("Violation of OpenAI policy")
+        continue
 
     # Classify Agent
-    # classify_response = classify_agent.classify(statement=statement)
-    # classify_response = json.loads(classify_response)
+    classify_response = classify_agent.classify(statement=statement)
+    classify_response = json.loads(classify_response)
 
     # Search Agent
     search_response = search_agent.search(query=statement)
@@ -65,23 +74,24 @@ for i in range(start_idx - 1, len(df)):
             statement=statement, search_results=search_response
         )
         fact_response = json.loads(fact_response)
-    except Exception as e:
-        print(f"Error in fact checking: {e}")
+    except BadRequestError as e:
+        print(f"Violation of OpenAI policy")
         continue
 
     # Authenticate Agent
-    # auth_response = authentication_agent.check(metadata=metadata)
-    # auth_response = json.loads(auth_response)
+    auth_response = authentication_agent.check(metadata=metadata)
+    auth_response = json.loads(auth_response)
 
     new_row = pd.DataFrame(
         [
             {
-                "statement": statement,
+                "classify_confidence": classify_response["confidence"],
                 "fact_confidence": fact_response["confidence"],
+                "authen_confidence": auth_response["confidence"],
+                "label": label,
             }
         ]
     )
 
     new_df = pd.concat([new_df, new_row], ignore_index=True)
-    # Save the results to a new CSV file
-    new_df.to_csv("./results/fact_checker_results_2.csv", index=False)
+    new_df.to_csv("./results/agent_results.csv", index=False)
