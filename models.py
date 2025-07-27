@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 
 from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
 import pandas as pd
 import numpy as np
 
@@ -20,7 +20,6 @@ df = df.values
 # Tách features và labels
 X = df[:, :-1]
 y = df[:, -1]
-
 
 # Danh sách các mô hình
 models = {
@@ -35,30 +34,49 @@ models = {
 
 # 10-fold cross-validation
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
-# Dictionary lưu kết quả accuracy của từng mô hình
 model_accuracies = {}
+model_f1_scores = {}
 
 for model_name, model in models.items():
     accuracies = []
+    f1_scores = []
     for train_index, test_index in kf.split(X):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-        accuracies.append(accuracy_score(y_test, y_pred))
 
-    mean_acc = np.mean(accuracies)
-    model_accuracies[model_name] = mean_acc * 100
-    print(f"{model_name}: {mean_acc * 100:.2f}%")
+        # Binary classification nên dùng average="binary"
+        accuracies.append(accuracy_score(y_test, y_pred))
+        f1_scores.append(f1_score(y_test, y_pred, average="weighted"))
+
+    model_accuracies[model_name] = np.mean(accuracies) * 100
+    model_f1_scores[model_name] = np.mean(f1_scores) * 100
+
+    print(
+        f"{model_name}: Accuracy = {model_accuracies[model_name]:.2f}%, F1 Score = {model_f1_scores[model_name]:.2f}%"
+    )
 
 # Vẽ biểu đồ
-plt.figure(figsize=(10, 6))
-plt.bar(model_accuracies.keys(), model_accuracies.values(), color="skyblue")
-plt.ylabel("Accuracy (%)")
-plt.title("Model Comparison (10-Fold CV Accuracy)")
-plt.xticks(rotation=45, ha="right")
+labels = list(model_accuracies.keys())
+accuracy_vals = [model_accuracies[name] for name in labels]
+f1_vals = [model_f1_scores[name] for name in labels]
+
+x = np.arange(len(labels))
+width = 0.35
+
+plt.figure(figsize=(12, 6))
+plt.bar(x - width / 2, accuracy_vals, width, label="Accuracy", color="skyblue")
+plt.bar(x + width / 2, f1_vals, width, label="F1 Score", color="salmon")
+
+plt.ylabel("Score (%)")
+plt.title(
+    "Model Comparison: Accuracy vs. F1 Score (Binary Classification - 10-Fold CV)"
+)
+plt.xticks(x, labels, rotation=45, ha="right")
 plt.ylim(0, 100)
+plt.legend()
 plt.tight_layout()
 
 # Lưu hình
