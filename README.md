@@ -89,7 +89,7 @@ python models.py
 | Hồi quy logistic (tối ưu hóa)     | 63,5              | [2]     |
 | BERT (cơ bản)                     | 63,5              | [2]     |
 | BERT (tối ưu hóa)                 | 63,5              | [2]     |
-| Naive Bayes (Bigram)              | 60,0              | [2]     |
+| Naive Bayes (Bigram)              | 60,0              | [3]     |
 | CNN                               | 58,0              | [3]     |
 | Bi-LSTM                           | 58,0              | [3]     |
 | Conv-HAN                          | 59,0              | [3]     |
