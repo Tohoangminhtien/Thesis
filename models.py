@@ -36,6 +36,7 @@ model_map = {
     "KNeighborsClassifier": KNeighborsClassifier,
     "GaussianNB": GaussianNB,
     "XGBClassifier": XGBClassifier,
+    "MLPClassifier": MLPClassifier,
 }
 
 # KFold strategy
@@ -102,11 +103,13 @@ x = np.arange(len(model_names))
 width = 0.35
 
 plt.figure(figsize=(14, 6))
-plt.bar(x - width/2, accuracy_scores, width, label='Accuracy', color='skyblue')
-plt.bar(x + width/2, f1_scores_avg, width, label='F1 Score', color='salmon')
+plt.bar(x - width / 2, accuracy_scores, width, label="Accuracy", color="skyblue")
+plt.bar(x + width / 2, f1_scores_avg, width, label="F1 Score", color="salmon")
 
-plt.ylabel('Score (%)')
-plt.title('Model Comparison: Accuracy vs. F1 Score (Binary Classification - 10-Fold CV)')
+plt.ylabel("Score (%)")
+plt.title(
+    "Model Comparison: Accuracy vs. F1 Score (Binary Classification - 10-Fold CV)"
+)
 plt.xticks(x, model_names, rotation=45)
 plt.ylim(0, 100)
 plt.legend()

@@ -2,9 +2,19 @@
   "Logistic Regression": {
     "model": "LogisticRegression",
     "params": {
-      "C": [0.01, 0.1, 1, 10],
-      "solver": ["liblinear", "lbfgs"],
-      "penalty": ["l2"]
+      "C": [
+        0.01,
+        0.1,
+        1,
+        10
+      ],
+      "solver": [
+        "liblinear",
+        "lbfgs"
+      ],
+      "penalty": [
+        "l2"
+      ]
     }
   },
   "Naive Bayes": {
@@ -14,44 +24,134 @@
   "Decision Tree": {
     "model": "DecisionTreeClassifier",
     "params": {
-      "max_depth": [null, 5, 10, 20],
-      "min_samples_split": [2, 5, 10],
-      "criterion": ["gini", "entropy"]
+      "max_depth": [
+        null,
+        5,
+        10,
+        20
+      ],
+      "min_samples_split": [
+        2,
+        5,
+        10
+      ],
+      "criterion": [
+        "gini",
+        "entropy"
+      ]
     }
   },
   "Random Forest": {
     "model": "RandomForestClassifier",
     "params": {
-      "n_estimators": [50, 100],
-      "max_depth": [null, 10, 20],
-      "max_features": ["sqrt", "log2"]
+      "n_estimators": [
+        50,
+        100
+      ],
+      "max_depth": [
+        null,
+        10,
+        20
+      ],
+      "max_features": [
+        "sqrt",
+        "log2"
+      ]
     }
   },
   "XGBoost": {
     "model": "XGBClassifier",
     "params": {
-      "n_estimators": [50, 100],
-      "max_depth": [3, 5, 7],
-      "learning_rate": [0.01, 0.1, 0.2],
-      "subsample": [0.8, 1.0],
-      "colsample_bytree": [0.8, 1.0],
-      "eval_metric": ["logloss"]
+      "n_estimators": [
+        50,
+        100
+      ],
+      "max_depth": [
+        3,
+        5,
+        7
+      ],
+      "learning_rate": [
+        0.01,
+        0.1,
+        0.2
+      ],
+      "subsample": [
+        0.8,
+        1.0
+      ],
+      "colsample_bytree": [
+        0.8,
+        1.0
+      ],
+      "eval_metric": [
+        "logloss"
+      ]
     }
   },
   "SVM (RBF)": {
     "model": "SVC",
     "params": {
-      "C": [0.1, 1, 10],
-      "kernel": ["rbf"],
-      "gamma": ["scale", "auto"]
+      "C": [
+        0.1,
+        1,
+        10
+      ],
+      "kernel": [
+        "rbf"
+      ],
+      "gamma": [
+        "scale",
+        "auto"
+      ]
     }
   },
   "KNN (k-Nearest Neighbors)": {
     "model": "KNeighborsClassifier",
     "params": {
-      "n_neighbors": [3, 5, 7],
-      "weights": ["uniform", "distance"],
-      "metric": ["euclidean", "manhattan"]
+      "n_neighbors": [
+        3,
+        5,
+        7
+      ],
+      "weights": [
+        "uniform",
+        "distance"
+      ],
+      "metric": [
+        "euclidean",
+        "manhattan"
+      ]
+    }
+  },
+  "MLP": {
+    "model": "MLPClassifier",
+    "params": {
+      "hidden_layer_sizes": [
+        [
+          32,
+          16
+        ],
+        [
+          64,
+          32
+        ],
+        [
+          16,
+          8
+        ],
+        [
+          8,
+          4
+        ],
+        [
+          4,
+          2
+        ]
+      ],
+      "max_iter": [
+        500
+      ]
     }
   }
 }
