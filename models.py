@@ -1,84 +1,117 @@
+import json
+import os
+import numpy as np
+import pandas as pd
+import joblib
 import matplotlib.pyplot as plt
-from sklearn.neural_network import MLPClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, GridSearchCV
+from sklearn.metrics import accuracy_score, f1_score, make_scorer
+
+# Import mô hình
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from xgboost import XGBClassifier
 
-from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score, f1_score
-import pandas as pd
-import numpy as np
-
-# Đọc dữ liệu
+# Load dữ liệu
 df = pd.read_csv("./results/agent_results.csv")
 df["label"] = df["label"].astype(int)
-df = df.values
+X = df.iloc[:, :-1].values
+y = df.iloc[:, -1].values
 
-# Tách features và labels
-X = df[:, :-1]
-y = df[:, -1]
+# Load config từ JSON
+with open("./grid_search/param.json", "r") as f:
+    config = json.load(f)
 
-# Danh sách các mô hình
-models = {
-    "Naive Bayes": GaussianNB(),
-    "Logistic Regression": LogisticRegression(max_iter=500, random_state=42),
-    "Decision Tree": DecisionTreeClassifier(random_state=42),
-    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
-    "SVM (RBF)": SVC(kernel="rbf", gamma="scale", random_state=42),
-    "KNN (k=5)": KNeighborsClassifier(n_neighbors=5),
-    "MLP": MLPClassifier(hidden_layer_sizes=(64,), max_iter=500, random_state=42),
+# Model map
+model_map = {
+    "DecisionTreeClassifier": DecisionTreeClassifier,
+    "RandomForestClassifier": RandomForestClassifier,
+    "LogisticRegression": LogisticRegression,
+    "SVC": SVC,
+    "KNeighborsClassifier": KNeighborsClassifier,
+    "GaussianNB": GaussianNB,
+    "XGBClassifier": XGBClassifier,
 }
 
-# 10-fold cross-validation
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-model_accuracies = {}
-model_f1_scores = {}
+# KFold strategy
+skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
 
-for model_name, model in models.items():
-    accuracies = []
-    f1_scores = []
-    for train_index, test_index in kf.split(X):
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
+# Lưu kết quả để vẽ biểu đồ
+model_names = []
+accuracy_scores = []
+f1_scores_avg = []
 
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)
+for model_name, model_info in config.items():
+    model_class = model_map[model_info["model"]]
 
-        # Binary classification nên dùng average="binary"
-        accuracies.append(accuracy_score(y_test, y_pred))
-        f1_scores.append(f1_score(y_test, y_pred, average="weighted"))
+    param_grid = model_info["params"]
+    for k, v in param_grid.items():
+        param_grid[k] = [None if val is None or val == "null" else val for val in v]
 
-    model_accuracies[model_name] = np.mean(accuracies) * 100
-    model_f1_scores[model_name] = np.mean(f1_scores) * 100
+    print(f"\n🔍 Running GridSearch for {model_name}...")
 
-    print(
-        f"{model_name}: Accuracy = {model_accuracies[model_name]:.2f}%, F1 Score = {model_f1_scores[model_name]:.2f}%"
+    grid = GridSearchCV(
+        estimator=model_class(),
+        param_grid=param_grid,
+        cv=skf,
+        scoring=make_scorer(f1_score, average="binary"),
+        n_jobs=-1,
+        verbose=0,
     )
+    grid.fit(X, y)
 
-# Vẽ biểu đồ
-labels = list(model_accuracies.keys())
-accuracy_vals = [model_accuracies[name] for name in labels]
-f1_vals = [model_f1_scores[name] for name in labels]
+    best_model = grid.best_estimator_
+    best_params = grid.best_params_
 
-x = np.arange(len(labels))
+    # Đánh giá lại trên K-Fold
+    acc_scores = []
+    f1_scores = []
+    for train_idx, test_idx in skf.split(X, y):
+        X_train, X_test = X[train_idx], X[test_idx]
+        y_train, y_test = y[train_idx], y[test_idx]
+
+        best_model.fit(X_train, y_train)
+        y_pred = best_model.predict(X_test)
+
+        acc_scores.append(accuracy_score(y_test, y_pred))
+        f1_scores.append(f1_score(y_test, y_pred, average="binary"))
+
+    mean_acc = np.mean(acc_scores) * 100
+    mean_f1 = np.mean(f1_scores) * 100
+
+    print(f"✅ Best Params: {best_params}")
+    print(f"📈 Accuracy: {mean_acc:.2f}%")
+    print(f"📊 F1 Score: {mean_f1:.2f}%")
+
+    # Lưu mô hình tốt nhất
+    os.makedirs("./best_models", exist_ok=True)
+    joblib.dump(best_model, f"./best_models/{model_info['model']}_best.pkl")
+
+    # Lưu để vẽ biểu đồ
+    model_names.append(model_name)
+    accuracy_scores.append(mean_acc)
+    f1_scores_avg.append(mean_f1)
+
+# Vẽ biểu đồ sau khi tất cả mô hình đã chạy xong
+x = np.arange(len(model_names))
 width = 0.35
 
-plt.figure(figsize=(12, 6))
-plt.bar(x - width / 2, accuracy_vals, width, label="Accuracy", color="skyblue")
-plt.bar(x + width / 2, f1_vals, width, label="F1 Score", color="salmon")
+plt.figure(figsize=(14, 6))
+plt.bar(x - width/2, accuracy_scores, width, label='Accuracy', color='skyblue')
+plt.bar(x + width/2, f1_scores_avg, width, label='F1 Score', color='salmon')
 
-plt.ylabel("Score (%)")
-plt.title(
-    "Model Comparison: Accuracy vs. F1 Score (Binary Classification - 10-Fold CV)"
-)
-plt.xticks(x, labels, rotation=45, ha="right")
+plt.ylabel('Score (%)')
+plt.title('Model Comparison: Accuracy vs. F1 Score (Binary Classification - 10-Fold CV)')
+plt.xticks(x, model_names, rotation=45)
 plt.ylim(0, 100)
 plt.legend()
 plt.tight_layout()
 
-# Lưu hình
-plt.savefig("./assets/model_accuracy_comparison.png")
+os.makedirs("./assets", exist_ok=True)
+plt.savefig("./assets/model_accuracy_comparison.png", dpi=300)
 plt.show()
