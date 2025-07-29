@@ -9,9 +9,9 @@ def evaluate_method(csv_file: str):
     y = df["label"].tolist()
     y_pred = df["predict"].tolist()
     print("Accuracy:", accuracy_score(y, y_pred))
-    print("Precision:", precision_score(y, y_pred, average="weighted"))
-    print("Recall:", recall_score(y, y_pred, average="weighted"))
-    print("F1: ", f1_score(y, y_pred, average="weighted"))
+    print("Precision:", precision_score(y, y_pred, average="binary"))
+    print("Recall:", recall_score(y, y_pred, average="binary"))
+    print("F1: ", f1_score(y, y_pred, average="binary"))
     print("-" * 50)
 
 
