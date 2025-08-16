@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Fact Checking Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+
+        form input[type="text"],
+        form textarea {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        form textarea {
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result-card {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9f5ff;
+            border-left: 5px solid #007bff;
+            border-radius: 8px;
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        .result-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .result-card ul li {
+            padding: 6px 0;
+            font-size: 15px;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #ffd6d6;
+            color: #b80000;
+            border-radius: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Fact Checking Dashboard</h2>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+            <label>Statement:</label>
+            <textarea name="statement" rows="4" required></textarea>
+
+            <label>Subject:</label><input type="text" name="subject">
+            <label>Speaker:</label><input type="text" name="speaker">
+            <label>Job Title:</label><input type="text" name="job_title">
+            <label>State Info:</label><input type="text" name="state_info">
+            <label>Party Affiliation:</label><input type="text" name="party_affiliation">
+            <label>Context:</label><input type="text" name="context">
+
+            <button type="submit">Run Inference</button>
+        </form>
+
+        {% if result %}
+        <div class="result-card">
+            <h3>Confidence Results</h3>
+            <ul>
+                {% for key, value in result.items() %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+                {% endfor %}
+            </ul>
+            {% if prediction is not none %}
+            <h3>Predicted Label: {{ prediction }}</h3>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
